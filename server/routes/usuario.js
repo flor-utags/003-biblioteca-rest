@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('underscore');
 const Usuario = require('../models/usuario');
 const app = express(); 
    
@@ -54,16 +55,26 @@ app.post('/usuario', function (req, res) {
   
   app.put('/usuario/:id/:nombre', function (req, res) {
       let id = req.params.id;
-      let nombre = req.params.nombre;
-  
-      res.json({
-          ok: 200,
-          mensaje: 'Usuario actualizado con exito',
-          id: id,
-          nombre: nombre
-      });
-  }); 
-  
+      let body = _.pick(req.body, ['nombre', 'email']);
+        
+        Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
+        (err, usrDB) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'Ocurrio un error al momento de actualizar',
+                    err
+                });
+            }
+
+            res.json({
+                ok: true,
+                msg: 'Usuario actualizado con exito',
+                usuario: usrDB
+            });
+        }); 
+});     
+
   app.delete('/usuario/:id', function(req, res) {
       let id = req.params.id;
 
