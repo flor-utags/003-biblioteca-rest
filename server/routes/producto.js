@@ -1,83 +1,87 @@
 const express = require('express');
 const _ = require('underscore');
 const app = express();
-const Categoria = require('../models/categoria');
+const Producto = require('../models/producto');
 
-app.get('/categoria', (req, res) => {
+app.get('/producto', function(req, res) {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 5;
 
-    Categoria.find({})
+    Producto.find({ disponible: true })
         .skip(Number(desde))
         .limit(Number(hasta))
         .populate('usuario', 'nombre email')
-        .exec((err, categorias) => {
+        .populate('categoria', 'descripcion')
+        .exec((err, productos) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    msg: 'Ocurrio un error al listar las categorias',
+                    msg: 'Ocurrio un error al momento de consultar',
                     err
                 });
             }
 
             res.json({
                 ok: true,
-                msg: 'Categorias listadas con exito',
-                conteo: categorias.length,
-                categorias
+                msg: 'Lista de productos obtenida con exito',
+                conteo: productos.length,
+                productos
             });
         });
 });
 
-app.post('/categoria', (req, res) => {
-    let cat = new Categoria({
-        descripcion: req.body.descripcion,
+app.post('/producto', (req, res) => {
+    let pro = new Producto({
+        articulo: req.body.articulo,
+        precioUni: req.body.precioUni,
+        categoria: req.body.categoria,
+        disponible: req.body.disponible,
         usuario: req.body.usuario
     });
 
-    cat.save((err, catDB) => {
+    pro.save((err, proDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Error al insertar una categoria',
+                msg: 'Error al insertar un producto',
                 err
             });
         }
 
         res.json({
             ok: true,
-            msg: 'Categoria insertada con exito',
-            catDB
+            msg: 'Producto insertado con exito',
+            proDB
         });
     });
 });
 
-app.put('/categoria/:id', (req, res) => {
+app.put('/producto/:id', function(req, res) {
     let id = req.params.id;
-    let body = _.pick(req.body, ['descripcion', 'usuario']);
+    let body = _.pick(req.body, ['articulo', 'precioUni']);
 
-    Categoria.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
-        (err, catDB) => {
+    Producto.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
+        (err, proDB) => {
             if (err) {
                 return res.status(400).json({
-                    ok: true,
+                    ok: false,
                     msg: 'Ocurrio un error al momento de actualizar',
                     err
                 });
             }
-
             res.json({
                 ok: true,
-                msg: 'Categoria actualizada con exito',
-                catDB
+                msg: 'Producto actualizado con exito',
+                producto: proDB
             });
         });
 });
 
-app.delete('/categoria/:id', (req, res) => {
+app.delete('/producto/:id', function(req, res) {
+
     let id = req.params.id;
 
-    Categoria.findByIdAndRemove(id, { context: 'query' }, (err, catDB) => {
+    Producto.findByIdAndUpdate(id, { disponible: false }, { new: true, runValidators: true, context: 'query' }, (err, proDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -85,13 +89,14 @@ app.delete('/categoria/:id', (req, res) => {
                 err
             });
         }
-
         res.json({
             ok: true,
-            msg: 'La categoria fue eliminada con exito',
-            catDB
+            msg: 'Porducto eliminado con exito',
+            proDB
+
         });
     });
 });
+
 
 module.exports = app;
