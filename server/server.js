@@ -14,12 +14,12 @@ app.get('/', function(req, res) {
     res.send('<h1>Bienvenido a mi servidor REST</h1>');
 }); 
 
-app.use(require('./routes/usuario'));
-app.use(require('./routes/categoria'));
-app.use(require('./routes/producto'));
+app.use(require('./routes/usuarios'));
+app.use(require('./routes/libros'));
+app.use(require('./routes/prestamos'));
 app.use(require('./routes/login'));
 
-mongoose.connect('mongodb+srv://admin:12345678ms@cluster0.74gdo.mongodb.net/cafeteria', {
+mongoose.connect('mongodb+srv://admin:12345678ms@cluster0.74gdo.mongodb.net/biblioteca', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

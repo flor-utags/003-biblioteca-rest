@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let categoriaSchema = new Schema({
+let librosSchema = new Schema({
     descripcion: {
         type: String,
         unique: true,
@@ -9,8 +9,8 @@ let categoriaSchema = new Schema({
     },
     usuario: {
       type: Schema.Types.ObjectId,
-      ref: 'usuario'
+      ref: 'usuarios'
     }
 });
 
-module.exports = mongoose.model('Categoria', categoriaSchema)
+module.exports = mongoose.model('Libros', librosSchema)

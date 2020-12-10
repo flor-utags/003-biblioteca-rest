@@ -1,18 +1,18 @@
 const express = require('express');
 const _ = require('underscore');
 const app = express();
-const Producto = require('../models/producto');
+const Prestamos = require('../models/prestamos');
 
-app.get('/producto', function(req, res) {
+app.get('/prestamos', function(req, res) {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 5;
 
-    Producto.find({ disponible: true })
+    Prestamos.find({ disponible: true })
         .skip(Number(desde))
         .limit(Number(hasta))
-        .populate('usuario', 'nombre email')
-        .populate('categoria', 'descripcion')
-        .exec((err, productos) => {
+        .populate('usuarios', 'nombre email')
+        .populate('libros', 'descripcion')
+        .exec((err, prestamos) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
@@ -24,19 +24,19 @@ app.get('/producto', function(req, res) {
             res.json({
                 ok: true,
                 msg: 'Lista de productos obtenida con exito',
-                conteo: productos.length,
-                productos
+                conteo: prestamos.length,
+                prestamos
             });
         });
 });
 
-app.post('/producto', (req, res) => {
-    let pro = new Producto({
+app.post('/prestamos', (req, res) => {
+    let pro = new Prestamos({
         articulo: req.body.articulo,
         precioUni: req.body.precioUni,
-        categoria: req.body.categoria,
+        libros: req.body.libros,
         disponible: req.body.disponible,
-        usuario: req.body.usuario
+        usuarios: req.body.usuarios
     });
 
     pro.save((err, proDB) => {
@@ -56,11 +56,11 @@ app.post('/producto', (req, res) => {
     });
 });
 
-app.put('/producto/:id', function(req, res) {
+app.put('/prestamos/:id', function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['articulo', 'precioUni']);
 
-    Producto.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
+    Prestamos.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
         (err, proDB) => {
             if (err) {
                 return res.status(400).json({
@@ -77,11 +77,11 @@ app.put('/producto/:id', function(req, res) {
         });
 });
 
-app.delete('/producto/:id', function(req, res) {
+app.delete('/prestamos/:id', function(req, res) {
 
     let id = req.params.id;
 
-    Producto.findByIdAndUpdate(id, { disponible: false }, { new: true, runValidators: true, context: 'query' }, (err, proDB) => {
+    Prestamos.findByIdAndUpdate(id, { disponible: false }, { new: true, runValidators: true, context: 'query' }, (err, proDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,

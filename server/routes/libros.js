@@ -1,17 +1,17 @@
 const express = require('express');
 const _ = require('underscore');
 const app = express();
-const Categoria = require('../models/categoria');
+const Libros = require('../models/libros');
 
-app.get('/categoria', (req, res) => {
+app.get('/libros', (req, res) => {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 5;
 
-    Categoria.find({})
+    Libros.find({})
         .skip(Number(desde))
         .limit(Number(hasta))
-        .populate('usuario', 'nombre email')
-        .exec((err, categorias) => {
+        .populate('usuarios', 'nombre email')
+        .exec((err, libros) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
@@ -22,41 +22,41 @@ app.get('/categoria', (req, res) => {
 
             res.json({
                 ok: true,
-                msg: 'Categorias listadas con exito',
-                conteo: categorias.length,
-                categorias
+                msg: 'Libros listadas con exito',
+                conteo: libros.length,
+                libros
             });
         });
 });
 
-app.post('/categoria', (req, res) => {
-    let cat = new Categoria({
+app.post('/libros', (req, res) => {
+    let cat = new Libros({
         descripcion: req.body.descripcion,
-        usuario: req.body.usuario
+        usuarios: req.body.usuarios
     });
 
     cat.save((err, catDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Error al insertar una categoria',
+                msg: 'Error al insertar un libro',
                 err
             });
         }
 
         res.json({
             ok: true,
-            msg: 'Categoria insertada con exito',
+            msg: 'Libros insertada con exito',
             catDB
         });
     });
 });
 
-app.put('/categoria/:id', (req, res) => {
+app.put('/libros/:id', (req, res) => {
     let id = req.params.id;
-    let body = _.pick(req.body, ['descripcion', 'usuario']);
+    let body = _.pick(req.body, ['descripcion', 'usuarios']);
 
-    Categoria.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
+    Libros.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' },
         (err, catDB) => {
             if (err) {
                 return res.status(400).json({
@@ -74,10 +74,10 @@ app.put('/categoria/:id', (req, res) => {
         });
 });
 
-app.delete('/categoria/:id', (req, res) => {
+app.delete('/libros/:id', (req, res) => {
     let id = req.params.id;
 
-    Categoria.findByIdAndRemove(id, { context: 'query' }, (err, catDB) => {
+    Libros.findByIdAndRemove(id, { context: 'query' }, (err, catDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,

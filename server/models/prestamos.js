@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let productoSchema = new Schema({
+let prestamosSchema = new Schema({
     articulo: {
         type: String,
         unique: true,
@@ -11,18 +11,18 @@ let productoSchema = new Schema({
         type: Number,
         required: [true, 'El precio es obligatorio']
     },
-    categoria: {
-        type: Schema.Types.ObjectId,
-        ref: 'Categoria'
+    libros: {
+        type: librosSchema.Types.ObjectId,
+        ref: ''
     },
     disponible: {
         type: Boolean,
         default: true
     },
-    usuario: {
+    usuarios: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario'
+        ref: 'Usuarios'
     }
 });
 
-module.exports = mongoose.model('Producto', productoSchema);
+module.exports = mongoose.model('Prestamos', prestamosSchema);

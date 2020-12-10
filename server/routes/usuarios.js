@@ -1,13 +1,13 @@
 const express = require('express');
 const _ = require('underscore');
-const Usuario = require('../models/usuario');
+const Usuarios = require('../models/usuarios');
 const app = express(); 
    
-  app.get('/usuario', function(req, res) {
+  app.get('/usuarios', function(req, res) {
     let desde = req.query.desde || 0;
     let hasta = req.query.hasta || 5;
 
-    Usuario.find({ estado: true })
+    Usuarios.find({ estado: true })
     .skip(Number(desde))
     .limit(Number(hasta))
     .exec((err, usuarios) => {
@@ -28,9 +28,9 @@ const app = express();
       });
   });
 
-app.post('/usuario', function (req, res) {
+app.post('/usuarios', function (req, res) {
     let body = req.body;
-      let usr = new Usuario({
+      let usr = new Usuarios({
           nombre: body.nombre,
           email: body.email,
           password: body.password
@@ -53,7 +53,7 @@ app.post('/usuario', function (req, res) {
       });
   });
   
-  app.put('/usuario/:id/:nombre', function (req, res) {
+  app.put('/usuarios/:id/:nombre', function (req, res) {
       let id = req.params.id;
       let body = _.pick(req.body, ['nombre', 'email']);
         
@@ -70,12 +70,12 @@ app.post('/usuario', function (req, res) {
             res.json({
                 ok: true,
                 msg: 'Usuario actualizado con exito',
-                usuario: usrDB
+                usuarios: usrDB
             });
         }); 
 });     
 
-  app.delete('/usuario/:id', function(req, res) {
+  app.delete('/usuarios/:id', function(req, res) {
     //   let id = req.params.id;
 
     //   Usuario.deleteOne({ _id: id }, (err, usuarioBorrado) => {
@@ -96,7 +96,7 @@ app.post('/usuario', function (req, res) {
 
     let id = req.params.id;
 
-    Usuario.findByIdAndUpdate(id, { estado: false }, { new: true, runValidators: true, context: 'query' }, (err, usrDB) => {
+    Usuarios.findByIdAndUpdate(id, { estado: false }, { new: true, runValidators: true, context: 'query' }, (err, usrDB) => {
             if(err) {
                         return res.status(400).json({
                                 ok:false,
